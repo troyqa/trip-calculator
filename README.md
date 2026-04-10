@@ -56,6 +56,32 @@ Vite, React, TypeScript, Tailwind CSS, MUI, Leaflet / react-leaflet, i18next, Vi
 
 Map tiles © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributors.
 
+## GitHub Pages
+
+This repo includes [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml). It builds on every push to `main` and publishes the `dist` folder to GitHub Pages.
+
+### One-time setup (repository settings)
+
+1. **GitHub** → your repo → **Settings** → **Pages**.
+2. Under **Build and deployment** → **Source**, choose **GitHub Actions** (not “Deploy from a branch”).
+3. **Secrets and variables** → **Actions** → **New repository secret**:
+   - Name: `VITE_ORS_API_KEY`  
+   - Value: your OpenRouteService API key (same as in local `.env`).  
+   If you skip this, the deployed site still loads, but map routing and search will not work until the secret is set.
+
+After the first successful workflow run, open **Settings → Pages** again: GitHub shows the public URL (usually `https://<username>.github.io/<repository-name>/`).
+
+### Local build with the same base path as Pages
+
+Project sites are served under `/<repo-name>/`. CI sets `GITHUB_PAGES_BASE` automatically. To reproduce locally:
+
+```bash
+GITHUB_PAGES_BASE=/your-repo-name/ npm run build
+npm run preview
+```
+
+Replace `your-repo-name` with your GitHub repository name.
+
 ---
 
 ## Attribution: AI-generated codebase
