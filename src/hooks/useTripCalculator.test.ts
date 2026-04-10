@@ -1,6 +1,16 @@
 import { act, renderHook } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { useTripCalculator } from './useTripCalculator'
+
+vi.mock('./useUkraineFuelPrices', () => ({
+  useUkraineFuelPrices: () => ({
+    prices: { gasoline: 50, diesel: 50, lpg: 50 },
+    loading: false,
+    error: null,
+    fetchedAt: null,
+    usedFallback: false,
+  }),
+}))
 
 describe('useTripCalculator', () => {
   it('computes total when inputs are valid', () => {

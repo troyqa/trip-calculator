@@ -34,7 +34,15 @@ function App() {
     setConsumptionLPer100km,
     selectedVehicleId,
     selectVehicle,
-    fuelPricePerLiter,
+    fuelPriceSource,
+    setFuelPriceSource,
+    presetFuelType,
+    setPresetFuelType,
+    uaFuelPricesLoading,
+    uaFuelPricesError,
+    uaFuelPricesFetchedAt,
+    uaFuelPricesUsedFallback,
+    fuelPriceDisplay,
     setFuelPricePerLiter,
     people,
     setPeople,
@@ -85,7 +93,15 @@ function App() {
               onDistanceKmChange={setDistanceKm}
               consumptionLPer100km={consumptionLPer100km}
               onConsumptionChange={setConsumptionLPer100km}
-              fuelPricePerLiter={fuelPricePerLiter}
+              fuelPriceSource={fuelPriceSource}
+              onFuelPriceSourceChange={setFuelPriceSource}
+              presetFuelType={presetFuelType}
+              onPresetFuelTypeChange={setPresetFuelType}
+              uaFuelPricesLoading={uaFuelPricesLoading}
+              uaFuelPricesError={uaFuelPricesError}
+              uaFuelPricesFetchedAt={uaFuelPricesFetchedAt}
+              uaFuelPricesUsedFallback={uaFuelPricesUsedFallback}
+              fuelPriceDisplay={fuelPriceDisplay}
               onFuelPriceChange={setFuelPricePerLiter}
               people={people}
               onPeopleChange={setPeople}
