@@ -6,6 +6,8 @@ import {
   parseOptionalPositiveNumber,
   resolvePerPersonUah,
 } from '../lib/tripCost'
+import type { PresetFuelKind } from '../services/ukFuelPrices'
+import { useUkraineFuelPrices } from './useUkraineFuelPrices'
 
 export type TripCalculatorInputs = {
   distanceKm: string
@@ -24,6 +26,18 @@ export type TripCalculatorResult = {
 }
 
 export function useTripCalculator() {
+  const {
+    prices: uaFuelPrices,
+    loading: uaFuelPricesLoading,
+    error: uaFuelPricesError,
+    fetchedAt: uaFuelPricesFetchedAt,
+    usedFallback: uaFuelPricesUsedFallback,
+  } = useUkraineFuelPrices()
+  const [fuelPriceSource, setFuelPriceSourceState] = useState<
+    'preset' | 'manual'
+  >('preset')
+  const [presetFuelType, setPresetFuelType] =
+    useState<PresetFuelKind>('gasoline')
   const [distanceKm, setDistanceKm] = useState('')
   const [consumptionLPer100km, setConsumptionState] = useState('')
   const [selectedVehicleId, setSelectedVehicleId] = useState<string | null>(null)
@@ -47,10 +61,28 @@ export function useTripCalculator() {
     setConsumptionState(litersPer100km.toFixed(2))
   }, [])
 
+  const setFuelPriceSource = useCallback(
+    (v: 'preset' | 'manual') => {
+      if (v === 'manual' && fuelPriceSource === 'preset' && uaFuelPrices) {
+        setFuelPricePerLiter(uaFuelPrices[presetFuelType].toFixed(2))
+      }
+      setFuelPriceSourceState(v)
+    },
+    [fuelPriceSource, uaFuelPrices, presetFuelType],
+  )
+
+  const fuelPriceDisplay = useMemo(() => {
+    if (fuelPriceSource === 'preset') {
+      if (!uaFuelPrices) return ''
+      return uaFuelPrices[presetFuelType].toFixed(2)
+    }
+    return fuelPricePerLiter
+  }, [fuelPriceSource, presetFuelType, uaFuelPrices, fuelPricePerLiter])
+
   const result = useMemo((): TripCalculatorResult => {
     const d = parseOptionalPositiveNumber(distanceKm)
     const c = parseOptionalPositiveNumber(consumptionLPer100km)
-    const p = parseOptionalPositiveNumber(fuelPricePerLiter)
+    const p = parseOptionalPositiveNumber(fuelPriceDisplay)
     if (d === null || c === null || p === null) {
       return {
         totalUah: null,
@@ -99,7 +131,7 @@ export function useTripCalculator() {
   }, [
     distanceKm,
     consumptionLPer100km,
-    fuelPricePerLiter,
+    fuelPriceDisplay,
     people,
     includeDepreciation,
     includeReturnTrip,
@@ -112,6 +144,15 @@ export function useTripCalculator() {
     setConsumptionLPer100km,
     selectedVehicleId,
     selectVehicle,
+    fuelPriceSource,
+    setFuelPriceSource,
+    fuelPriceDisplay,
+    presetFuelType,
+    setPresetFuelType,
+    uaFuelPricesLoading,
+    uaFuelPricesError,
+    uaFuelPricesFetchedAt,
+    uaFuelPricesUsedFallback,
     fuelPricePerLiter,
     setFuelPricePerLiter,
     people,

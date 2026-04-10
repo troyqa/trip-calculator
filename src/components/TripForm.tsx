@@ -2,15 +2,23 @@ import {
   Box,
   Button,
   Checkbox,
+  CircularProgress,
+  FormControl,
   FormControlLabel,
+  FormLabel,
+  Radio,
+  RadioGroup,
   Stack,
   TextField,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from '@mui/material'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { TripCalculatorResult } from '../hooks/useTripCalculator'
 import { formatMoneyUah } from '../lib/formatUah'
+import type { PresetFuelKind } from '../services/ukFuelPrices'
 import { VehiclePicker } from './VehiclePicker'
 
 type TripFormProps = {
@@ -18,7 +26,16 @@ type TripFormProps = {
   onDistanceKmChange: (v: string) => void
   consumptionLPer100km: string
   onConsumptionChange: (v: string) => void
-  fuelPricePerLiter: string
+  fuelPriceSource: 'preset' | 'manual'
+  onFuelPriceSourceChange: (v: 'preset' | 'manual') => void
+  presetFuelType: PresetFuelKind
+  onPresetFuelTypeChange: (v: PresetFuelKind) => void
+  uaFuelPricesLoading: boolean
+  uaFuelPricesError: string | null
+  uaFuelPricesFetchedAt: string | null
+  uaFuelPricesUsedFallback: boolean
+  /** Resolved price for the form (preset from API or manual string). */
+  fuelPriceDisplay: string
   onFuelPriceChange: (v: string) => void
   people: string
   onPeopleChange: (v: string) => void
@@ -36,7 +53,15 @@ export function TripForm({
   onDistanceKmChange,
   consumptionLPer100km,
   onConsumptionChange,
-  fuelPricePerLiter,
+  fuelPriceSource,
+  onFuelPriceSourceChange,
+  presetFuelType,
+  onPresetFuelTypeChange,
+  uaFuelPricesLoading,
+  uaFuelPricesError,
+  uaFuelPricesFetchedAt,
+  uaFuelPricesUsedFallback,
+  fuelPriceDisplay,
   onFuelPriceChange,
   people,
   onPeopleChange,
@@ -102,15 +127,105 @@ export function TripForm({
         )}
       </Box>
 
-      <TextField
-        label={t('form.fuelPrice')}
-        value={fuelPricePerLiter}
-        onChange={(e) => onFuelPriceChange(e.target.value)}
-        type="text"
-        inputMode="decimal"
-        fullWidth
-        size="small"
-      />
+      <FormControl component="fieldset" variant="standard" sx={{ width: '100%' }}>
+        <FormLabel component="legend" sx={{ mb: 1, typography: 'body2' }}>
+          {t('form.fuelPriceSection')}
+        </FormLabel>
+        <RadioGroup
+          row
+          value={fuelPriceSource}
+          onChange={(e) =>
+            onFuelPriceSourceChange(e.target.value as 'preset' | 'manual')
+          }
+        >
+          <FormControlLabel
+            value="preset"
+            control={<Radio size="small" />}
+            label={t('form.fuelPriceModePreset')}
+          />
+          <FormControlLabel
+            value="manual"
+            control={<Radio size="small" />}
+            label={t('form.fuelPriceModeManual')}
+          />
+        </RadioGroup>
+        {fuelPriceSource === 'preset' && (
+          <Stack spacing={1} sx={{ mt: 1 }}>
+            <ToggleButtonGroup
+              exclusive
+              value={presetFuelType}
+              onChange={(_, v: PresetFuelKind | null) => {
+                if (v != null) onPresetFuelTypeChange(v)
+              }}
+              size="small"
+              fullWidth
+              disabled={uaFuelPricesLoading}
+            >
+              <ToggleButton value="gasoline" sx={{ flex: 1 }}>
+                {t('form.fuelTypeGasoline')}
+              </ToggleButton>
+              <ToggleButton value="diesel" sx={{ flex: 1 }}>
+                {t('form.fuelTypeDiesel')}
+              </ToggleButton>
+              <ToggleButton value="lpg" sx={{ flex: 1 }}>
+                {t('form.fuelTypeLpg')}
+              </ToggleButton>
+            </ToggleButtonGroup>
+            <TextField
+              label={t('form.fuelPrice')}
+              value={fuelPriceDisplay}
+              type="text"
+              inputMode="decimal"
+              fullWidth
+              size="small"
+              slotProps={{
+                input: {
+                  readOnly: true,
+                  endAdornment: uaFuelPricesLoading ? (
+                    <CircularProgress color="inherit" size={18} />
+                  ) : undefined,
+                },
+              }}
+              helperText={
+                uaFuelPricesLoading
+                  ? t('form.fuelPricesLoading')
+                  : [
+                      t('form.fuelPriceSourceHint'),
+                      uaFuelPricesUsedFallback
+                        ? t('form.fuelPricesFallback')
+                        : null,
+                      uaFuelPricesFetchedAt
+                        ? t('form.fuelPricesUpdated', {
+                            date: new Date(
+                              uaFuelPricesFetchedAt,
+                            ).toLocaleString(locale === 'en' ? 'en-GB' : 'uk-UA'),
+                          })
+                        : null,
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
+              }
+            />
+            {uaFuelPricesUsedFallback && uaFuelPricesError && (
+              <Typography variant="caption" color="warning.main">
+                {uaFuelPricesError}
+              </Typography>
+            )}
+          </Stack>
+        )}
+        {fuelPriceSource === 'manual' && (
+          <TextField
+            sx={{ mt: 1 }}
+            label={t('form.fuelPrice')}
+            value={fuelPriceDisplay}
+            onChange={(e) => onFuelPriceChange(e.target.value)}
+            type="text"
+            inputMode="decimal"
+            fullWidth
+            size="small"
+          />
+        )}
+      </FormControl>
       <Box
         sx={{
           display: 'flex',
