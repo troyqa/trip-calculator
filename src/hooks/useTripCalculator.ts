@@ -30,6 +30,7 @@ export function useTripCalculator() {
   const [fuelPricePerLiter, setFuelPricePerLiter] = useState('')
   const [people, setPeople] = useState('')
   const [includeDepreciation, setIncludeDepreciation] = useState(false)
+  const [includeReturnTrip, setIncludeReturnTrip] = useState(false)
 
   const setConsumptionLPer100km = useCallback((v: string) => {
     setSelectedVehicleId(null)
@@ -60,9 +61,10 @@ export function useTripCalculator() {
         inputsValid: false,
       }
     }
-    const fuelCostUah = computeTripCostUah(d, c, p)
+    const distanceForCostKm = includeReturnTrip ? d * 2 : d
+    const fuelCostUah = computeTripCostUah(distanceForCostKm, c, p)
     const depreciationUah = includeDepreciation
-      ? computeDepreciationUah(d, DEFAULT_DEPRECIATION_UAH_PER_KM)
+      ? computeDepreciationUah(distanceForCostKm, DEFAULT_DEPRECIATION_UAH_PER_KM)
       : 0
     const total = fuelCostUah + depreciationUah
     const per = resolvePerPersonUah(total, people)
@@ -94,7 +96,14 @@ export function useTripCalculator() {
       peopleError: false,
       inputsValid: true,
     }
-  }, [distanceKm, consumptionLPer100km, fuelPricePerLiter, people, includeDepreciation])
+  }, [
+    distanceKm,
+    consumptionLPer100km,
+    fuelPricePerLiter,
+    people,
+    includeDepreciation,
+    includeReturnTrip,
+  ])
 
   return {
     distanceKm,
@@ -109,6 +118,8 @@ export function useTripCalculator() {
     setPeople,
     includeDepreciation,
     setIncludeDepreciation,
+    includeReturnTrip,
+    setIncludeReturnTrip,
     result,
   }
 }
