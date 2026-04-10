@@ -1,3 +1,6 @@
+/** Default depreciation rate when the option is enabled (UAH per km). */
+export const DEFAULT_DEPRECIATION_UAH_PER_KM = 0.5
+
 /** Total trip fuel cost in UAH. */
 export function computeTripCostUah(
   distanceKm: number,
@@ -5,6 +8,11 @@ export function computeTripCostUah(
   fuelPricePerLiter: number,
 ): number {
   return (distanceKm / 100) * consumptionLPer100km * fuelPricePerLiter
+}
+
+/** Linear depreciation add-on: distance × rate (UAH). */
+export function computeDepreciationUah(distanceKm: number, uahPerKm: number): number {
+  return distanceKm * uahPerKm
 }
 
 export type PerPersonResult =
