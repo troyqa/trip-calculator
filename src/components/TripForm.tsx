@@ -24,6 +24,8 @@ type TripFormProps = {
   onPeopleChange: (v: string) => void
   includeDepreciation: boolean
   onIncludeDepreciationChange: (v: boolean) => void
+  includeReturnTrip: boolean
+  onIncludeReturnTripChange: (v: boolean) => void
   result: TripCalculatorResult
   selectedVehicleId: string | null
   onSelectVehicle: (id: string | null, litersPer100km: number | null) => void
@@ -40,6 +42,8 @@ export function TripForm({
   onPeopleChange,
   includeDepreciation,
   onIncludeDepreciationChange,
+  includeReturnTrip,
+  onIncludeReturnTripChange,
   result,
   selectedVehicleId,
   onSelectVehicle,
@@ -107,26 +111,65 @@ export function TripForm({
         fullWidth
         size="small"
       />
-      <FormControlLabel
-        control={
-          <Checkbox
-            size="small"
-            checked={includeDepreciation}
-            onChange={(e) => onIncludeDepreciationChange(e.target.checked)}
-          />
-        }
-        label={
-          <Stack component="span" spacing={0}>
-            <Typography component="span" variant="body2">
-              {t('form.includeDepreciation')}
-            </Typography>
-            <Typography component="span" variant="caption" color="text.secondary">
-              {t('form.depreciationRateHint')}
-            </Typography>
-          </Stack>
-        }
-        sx={{ alignItems: 'flex-start', m: 0 }}
-      />
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: 3,
+          alignItems: 'flex-start',
+        }}
+      >
+        <FormControlLabel
+          control={
+            <Checkbox
+              size="small"
+              checked={includeReturnTrip}
+              onChange={(e) => onIncludeReturnTripChange(e.target.checked)}
+            />
+          }
+          label={
+            <Stack component="span" spacing={0}>
+              <Typography component="span" variant="body2">
+                {t('form.includeReturnTrip')}
+              </Typography>
+              <Typography component="span" variant="caption" color="text.secondary">
+                {t('form.includeReturnTripHint')}
+              </Typography>
+            </Stack>
+          }
+          sx={{
+            alignItems: 'flex-start',
+            m: 0,
+            flex: '1 1 200px',
+            maxWidth: '100%',
+          }}
+        />
+        <FormControlLabel
+          control={
+            <Checkbox
+              size="small"
+              checked={includeDepreciation}
+              onChange={(e) => onIncludeDepreciationChange(e.target.checked)}
+            />
+          }
+          label={
+            <Stack component="span" spacing={0}>
+              <Typography component="span" variant="body2">
+                {t('form.includeDepreciation')}
+              </Typography>
+              <Typography component="span" variant="caption" color="text.secondary">
+                {t('form.depreciationRateHint')}
+              </Typography>
+            </Stack>
+          }
+          sx={{
+            alignItems: 'flex-start',
+            m: 0,
+            flex: '1 1 200px',
+            maxWidth: '100%',
+          }}
+        />
+      </Box>
       <TextField
         label={t('form.people')}
         value={people}

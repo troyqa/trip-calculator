@@ -6,6 +6,8 @@
   "language.en": "English",
   "currency.short": "UAH",
   "form.distance": "Distance (km)",
+  "form.includeReturnTrip": "Include return trip",
+  "form.includeReturnTripHint": "Distance is one-way; doubled for the estimate",
   "form.consumption": "Fuel consumption (L / 100 km)",
   "form.chooseVehicleFromList": "Or choose a car from the list",
   "form.hideVehicleList": "Hide vehicle list",

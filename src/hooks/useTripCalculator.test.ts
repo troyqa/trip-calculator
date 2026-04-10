@@ -29,6 +29,18 @@ describe('useTripCalculator', () => {
     expect(result.current.result.totalUah).toBe(450)
   })
 
+  it('doubles effective distance when return trip is included', () => {
+    const { result } = renderHook(() => useTripCalculator())
+    act(() => {
+      result.current.setDistanceKm('100')
+      result.current.setConsumptionLPer100km('8')
+      result.current.setFuelPricePerLiter('50')
+      result.current.setIncludeReturnTrip(true)
+    })
+    expect(result.current.result.fuelCostUah).toBe(800)
+    expect(result.current.result.totalUah).toBe(800)
+  })
+
   it('splits cost when people >= 2', () => {
     const { result } = renderHook(() => useTripCalculator())
     act(() => {

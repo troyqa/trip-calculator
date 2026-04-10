@@ -40,6 +40,8 @@ function App() {
     setPeople,
     includeDepreciation,
     setIncludeDepreciation,
+    includeReturnTrip,
+    setIncludeReturnTrip,
     result,
   } = useTripCalculator()
   const [routeSummary, setRouteSummary] = useState<RouteSummary | null>(null)
@@ -89,6 +91,8 @@ function App() {
               onPeopleChange={setPeople}
               includeDepreciation={includeDepreciation}
               onIncludeDepreciationChange={setIncludeDepreciation}
+              includeReturnTrip={includeReturnTrip}
+              onIncludeReturnTripChange={setIncludeReturnTrip}
               result={result}
               selectedVehicleId={selectedVehicleId}
               onSelectVehicle={selectVehicle}

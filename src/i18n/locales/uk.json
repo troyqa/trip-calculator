@@ -6,6 +6,8 @@
   "language.en": "English",
   "currency.short": "грн",
   "form.distance": "Відстань (км)",
+  "form.includeReturnTrip": "Врахувати зворотну дорогу",
+  "form.includeReturnTripHint": "Відстань у полі — в один бік; для розрахунку подвоюється",
   "form.consumption": "Витрата палива (л / 100 км)",
   "form.chooseVehicleFromList": "Або виберіть авто зі списку",
   "form.hideVehicleList": "Сховати вибір авто",
