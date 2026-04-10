@@ -9,7 +9,8 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "data:eea": "node scripts/generate-eea-co2-bundle.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

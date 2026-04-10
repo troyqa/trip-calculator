@@ -11,7 +11,22 @@ describe('useTripCalculator', () => {
       result.current.setFuelPricePerLiter('50')
     })
     expect(result.current.result.totalUah).toBe(400)
+    expect(result.current.result.fuelCostUah).toBe(400)
+    expect(result.current.result.depreciationUah).toBeNull()
     expect(result.current.result.inputsValid).toBe(true)
+  })
+
+  it('adds depreciation at 0.5 UAH/km when enabled', () => {
+    const { result } = renderHook(() => useTripCalculator())
+    act(() => {
+      result.current.setDistanceKm('100')
+      result.current.setConsumptionLPer100km('8')
+      result.current.setFuelPricePerLiter('50')
+      result.current.setIncludeDepreciation(true)
+    })
+    expect(result.current.result.fuelCostUah).toBe(400)
+    expect(result.current.result.depreciationUah).toBe(50)
+    expect(result.current.result.totalUah).toBe(450)
   })
 
   it('splits cost when people >= 2', () => {

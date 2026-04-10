@@ -40,6 +40,18 @@ Map routing and address search (biased to Ukraine) use **OpenRouteService** (fre
 
 Without a key, the app still runs: you can enter distance manually, but routing and address search stay disabled.
 
+## Vehicle fuel consumption (EEA / WLTP + presets)
+
+**Typical classes** (compact, sedan, SUV, etc.) presets use fixed approximate **L/100 km** values for a quick estimate.
+
+**EU models (EEA)** are bundled as JSON (no live API in the browser: [EEA Discodata](https://discodata.eea.europa.eu/Help.html) does not send permissive CORS). The build script (`scripts/generate-eea-co2-bundle.mjs`) pulls a **raw pool** from the [EEA CO₂ passenger car database](https://www.eea.europa.eu/en/datahub/datahubitem-view/fa8b1229-3db6-495d-b18e-9c9b3267c02b), then keeps the **most frequent (make, commercial name)** pairs—**major models**—and stores **one row per model** with **median** WLTP combined consumption (L/100 km) and dominant **petrol/diesel** type. **Model years are not kept** in the app. Regenerate when EEA changes the table name or you want a new sample:
+
+```bash
+npm run data:eea
+```
+
+Figures are **indicative**. **Hybrids, PHEVs, EVs**, etc. are excluded from the raw petrol/diesel filter—use manual consumption or presets.
+
 ## Tests
 
 ```bash

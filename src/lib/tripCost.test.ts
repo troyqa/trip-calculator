@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
+  computeDepreciationUah,
   computeTripCostUah,
+  DEFAULT_DEPRECIATION_UAH_PER_KM,
   isPositiveFinite,
   parseOptionalPositiveNumber,
   resolvePerPersonUah,
@@ -13,6 +15,12 @@ describe('computeTripCostUah', () => {
 
   it('handles fractional distance', () => {
     expect(computeTripCostUah(50, 10, 52)).toBe(260)
+  })
+})
+
+describe('computeDepreciationUah', () => {
+  it('uses distance × rate', () => {
+    expect(computeDepreciationUah(100, DEFAULT_DEPRECIATION_UAH_PER_KM)).toBe(50)
   })
 })
 

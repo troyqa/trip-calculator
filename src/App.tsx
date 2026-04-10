@@ -32,10 +32,14 @@ function App() {
     setDistanceKm,
     consumptionLPer100km,
     setConsumptionLPer100km,
+    selectedVehicleId,
+    selectVehicle,
     fuelPricePerLiter,
     setFuelPricePerLiter,
     people,
     setPeople,
+    includeDepreciation,
+    setIncludeDepreciation,
     result,
   } = useTripCalculator()
   const [routeSummary, setRouteSummary] = useState<RouteSummary | null>(null)
@@ -83,7 +87,11 @@ function App() {
               onFuelPriceChange={setFuelPricePerLiter}
               people={people}
               onPeopleChange={setPeople}
+              includeDepreciation={includeDepreciation}
+              onIncludeDepreciationChange={setIncludeDepreciation}
               result={result}
+              selectedVehicleId={selectedVehicleId}
+              onSelectVehicle={selectVehicle}
             />
           </Paper>
           <MapRouteSection

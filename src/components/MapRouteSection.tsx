@@ -109,20 +109,16 @@ function GeocodeAutocomplete({
   onChange,
   disabled,
 }: GeocodeAutocompleteProps) {
-  const [inputValue, setInputValue] = useState('')
+  const [inputValue, setInputValue] = useState(() => value?.label ?? '')
   const [options, setOptions] = useState<PointSelection[]>([])
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    setInputValue(value?.label ?? '')
-  }, [value])
-
-  useEffect(() => {
-    if (inputValue.trim().length < 2) {
-      setOptions([])
-      return
-    }
     const id = setTimeout(() => {
+      if (inputValue.trim().length < 2) {
+        setOptions([])
+        return
+      }
       setLoading(true)
       void searchUkraine(inputValue, apiKey)
         .then((hits) => {
@@ -297,12 +293,14 @@ export function MapRouteSection({
       {canUseApi && (
         <Box className="flex flex-col gap-2">
           <GeocodeAutocomplete
+            key={`pa-${pointA ? `${pointA.point.lat}-${pointA.point.lng}` : 'empty'}`}
             label={t('map.pointA')}
             apiKey={apiKey!}
             value={pointA}
             onChange={setPointA}
           />
           <GeocodeAutocomplete
+            key={`pb-${pointB ? `${pointB.point.lat}-${pointB.point.lng}` : 'empty'}`}
             label={t('map.pointB')}
             apiKey={apiKey!}
             value={pointB}
