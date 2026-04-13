@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate EEA fuel bundle
+        run: npm run data:eea
+
       - name: Build
         env:
           # Required so asset URLs match https://<user>.github.io/<repo>/
