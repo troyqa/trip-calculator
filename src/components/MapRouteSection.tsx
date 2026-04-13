@@ -1,5 +1,14 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type RefObject,
+} from 'react'
+import {
+  Alert,
+  AlertTitle,
   Autocomplete,
   Box,
   Button,
@@ -23,7 +32,11 @@ import {
 import { useTranslation } from 'react-i18next'
 import type { RouteSummary } from '../types/route'
 import { fetchDrivingRoute, metersToKm, type LonLat } from '../services/orsDirections'
-import { searchUkraine } from '../services/orsGeocode'
+import { getDefaultUkraineCitySuggestions } from '../data/uaCitySuggestions'
+import {
+  searchUkraine,
+  type GeocodeUiLang,
+} from '../services/orsGeocode'
 
 import iconRetina from 'leaflet/dist/images/marker-icon-2x.png'
 import iconUrl from 'leaflet/dist/images/marker-icon.png'
@@ -96,30 +109,47 @@ function formatDuration(sec: number, t: (k: string, o?: Record<string, unknown>)
 type GeocodeAutocompleteProps = {
   label: string
   apiKey: string
+  uiLang: GeocodeUiLang
   value: PointSelection | null
   onChange: (v: PointSelection | null) => void
   disabled?: boolean
+  inputRef?: RefObject<HTMLInputElement | null>
 }
 
 function GeocodeAutocomplete({
   label,
   apiKey,
+  uiLang,
   value,
   onChange,
   disabled,
+  inputRef,
 }: GeocodeAutocompleteProps) {
+  const { t } = useTranslation()
   const [inputValue, setInputValue] = useState(() => value?.label ?? '')
   const [options, setOptions] = useState<PointSelection[]>([])
   const [loading, setLoading] = useState(false)
+  const [listboxOpen, setListboxOpen] = useState(false)
 
   useEffect(() => {
+    const q = inputValue.trim()
+    if (q.length === 0 && listboxOpen) {
+      setOptions(
+        getDefaultUkraineCitySuggestions(uiLang).map((h) => ({
+          label: h.label,
+          point: lonLatToLeaflet(h.lonLat),
+        })),
+      )
+      setLoading(false)
+      return
+    }
+    if (q.length < 2) {
+      setOptions([])
+      return
+    }
     const id = setTimeout(() => {
-      if (inputValue.trim().length < 2) {
-        setOptions([])
-        return
-      }
       setLoading(true)
-      void searchUkraine(inputValue, apiKey)
+      void searchUkraine(inputValue, apiKey, uiLang)
         .then((hits) => {
           setOptions(
             hits.map((h) => ({
@@ -132,12 +162,14 @@ function GeocodeAutocomplete({
         .finally(() => setLoading(false))
     }, 400)
     return () => clearTimeout(id)
-  }, [apiKey, inputValue])
+  }, [apiKey, inputValue, uiLang, listboxOpen])
 
   return (
     <Autocomplete
       disabled={disabled}
       value={value}
+      onOpen={() => setListboxOpen(true)}
+      onClose={() => setListboxOpen(false)}
       onChange={(_, v) => {
         onChange(v)
         if (v) setInputValue(v.label)
@@ -161,7 +193,13 @@ function GeocodeAutocomplete({
       getOptionLabel={(o) => o.label}
       isOptionEqualToValue={(a, b) => a.label === b.label && a.point.lat === b.point.lat}
       renderInput={(params) => (
-        <TextField {...params} label={label} size="small" />
+        <TextField
+          {...params}
+          inputRef={inputRef}
+          label={label}
+          size="small"
+          helperText={t('map.searchAddressHint')}
+        />
       )}
     />
   )
@@ -184,7 +222,11 @@ export function MapRouteSection({
   routeSummary,
   onRouteSummary,
 }: MapRouteSectionProps) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const geocodeLang: GeocodeUiLang = i18n.language.startsWith('en')
+    ? 'en'
+    : 'uk'
+  const pointBInputRef = useRef<HTMLInputElement>(null)
   const [pointA, setPointA] = useState<PointSelection | null>(null)
   const [pointB, setPointB] = useState<PointSelection | null>(null)
   const [stops, setStops] = useState<PointSelection[]>([])
@@ -245,18 +287,33 @@ export function MapRouteSection({
     return () => clearTimeout(debounceRef.current)
   }, [routePoints, canUseApi, buildRoute])
 
+  const afterPointASelected = useCallback(() => {
+    setMapMode('b')
+    requestAnimationFrame(() => pointBInputRef.current?.focus())
+  }, [])
+
   const handleMapClick = useCallback(
     (p: LatLng) => {
       const label = formatCoordLabel(p)
       if (mapMode === 'a') {
         setPointA({ label, point: p })
+        afterPointASelected()
       } else if (mapMode === 'b') {
         setPointB({ label, point: p })
       } else {
         setStops((s) => [...s, { label, point: p }])
       }
     },
-    [mapMode],
+    [afterPointASelected, mapMode],
+  )
+
+  const handlePointAChange = useCallback(
+    (v: PointSelection | null) => {
+      setPointA(v)
+      if (v) afterPointASelected()
+      else setMapMode('a')
+    },
+    [afterPointASelected],
   )
 
   const clearPoints = useCallback(() => {
@@ -264,6 +321,7 @@ export function MapRouteSection({
     setPointB(null)
     setStops([])
     setRouteLine([])
+    setMapMode('a')
     onRouteSummary(null)
     onRouteCleared()
     setError(null)
@@ -295,15 +353,18 @@ export function MapRouteSection({
             key={`pa-${pointA ? `${pointA.point.lat}-${pointA.point.lng}` : 'empty'}`}
             label={t('map.pointA')}
             apiKey={apiKey!}
+            uiLang={geocodeLang}
             value={pointA}
-            onChange={setPointA}
+            onChange={handlePointAChange}
           />
           <GeocodeAutocomplete
             key={`pb-${pointB ? `${pointB.point.lat}-${pointB.point.lng}` : 'empty'}`}
             label={t('map.pointB')}
             apiKey={apiKey!}
+            uiLang={geocodeLang}
             value={pointB}
             onChange={setPointB}
+            inputRef={pointBInputRef}
           />
         </Box>
       )}
@@ -352,12 +413,44 @@ export function MapRouteSection({
           })}
         </Typography>
         {loading && <CircularProgress size={22} />}
-        {error && (
-          <Typography variant="caption" color="error">
-            {t('map.routeError')}: {error}
-          </Typography>
-        )}
       </Box>
+      {error && canUseApi && (
+        <Alert
+          severity="error"
+          variant="outlined"
+          role="alert"
+          aria-live="assertive"
+          onClose={() => setError(null)}
+          sx={{
+            borderWidth: 2,
+            borderRadius: 0,
+            boxShadow: '4px 4px 0px 0px #121212',
+          }}
+          action={
+            <Button
+              color="inherit"
+              size="small"
+              variant="outlined"
+              onClick={() => {
+                void buildRoute()
+              }}
+              sx={{ borderRadius: 0, flexShrink: 0 }}
+            >
+              {t('map.routeErrorRetry')}
+            </Button>
+          }
+        >
+          <AlertTitle>{t('map.routeError')}</AlertTitle>
+          <Typography variant="body2" color="text.secondary" component="div">
+            {t('map.routeErrorIntro')}
+            <Box component="ul" sx={{ m: 0, mt: 1, pl: 2.5 }}>
+              <li>{t('map.routeErrorHint1')}</li>
+              <li>{t('map.routeErrorHint2')}</li>
+              <li>{t('map.routeErrorHint3')}</li>
+            </Box>
+          </Typography>
+        </Alert>
+      )}
       {routeSummary && canUseApi && (
         <Typography variant="body2" color="text.secondary">
           {t('trip.duration')}: {formatDuration(routeSummary.durationSec, t)}

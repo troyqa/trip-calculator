@@ -44,7 +44,12 @@ Without a key, the app still runs: you can enter distance manually, but routing 
 
 **Typical classes** (compact, sedan, SUV, etc.) presets use fixed approximate **L/100 km** values for a quick estimate.
 
-**EU models (EEA)** are bundled as JSON (no live API in the browser: [EEA Discodata](https://discodata.eea.europa.eu/Help.html) does not send permissive CORS). The build script (`scripts/generate-eea-co2-bundle.mjs`) pulls a **raw pool** from the [EEA CO₂ passenger car database](https://www.eea.europa.eu/en/datahub/datahubitem-view/fa8b1229-3db6-495d-b18e-9c9b3267c02b), then keeps the **most frequent (make, commercial name)** pairs—**major models**—and stores **one row per model** with **median** WLTP combined consumption (L/100 km) and dominant **petrol/diesel** type. **Model years are not kept** in the app. Regenerate when EEA changes the table name or you want a new sample:
+**EU models (EEA)** are bundled as JSON (no live API in the browser: [EEA Discodata](https://discodata.eea.europa.eu/Help.html) does not send permissive CORS). The build script (`scripts/generate-eea-co2-bundle.mjs`) pulls a **raw pool** from the [EEA CO₂ passenger car database](https://www.eea.europa.eu/en/datahub/datahubitem-view/fa8b1229-3db6-495d-b18e-9c9b3267c02b), then keeps the **most frequent (make, commercial name)** pairs—**major models**—and stores **one row per model** with **median** WLTP combined consumption (L/100 km) and dominant **petrol/diesel** type. **Model years are not kept** in the app.
+
+### Updating the EEA bundle
+
+- **GitHub Actions (production):** the [Deploy to GitHub Pages](.github/workflows/deploy-pages.yml) workflow runs `npm run data:eea` **before** `npm run build`, so each deploy ships a bundle freshly generated from EEA Discodata (no extra secrets).
+- **Local development:** run the same command when you want to refresh `src/data/eeaCo2Cars.bundle.json` (for example after EEA changes the SQL table name in `scripts/generate-eea-co2-bundle.mjs`, or to pull a newer sample on your machine):
 
 ```bash
 npm run data:eea
@@ -70,7 +75,7 @@ Map tiles © [OpenStreetMap](https://www.openstreetmap.org/copyright) contributo
 
 ## GitHub Pages
 
-This repo includes [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml). It builds on every push to `main` and publishes the `dist` folder to GitHub Pages.
+This repo includes [`.github/workflows/deploy-pages.yml`](.github/workflows/deploy-pages.yml). On every push to `main` it regenerates the EEA fuel bundle (`npm run data:eea`), then builds and publishes the `dist` folder to GitHub Pages.
 
 ### One-time setup (repository settings)
 
