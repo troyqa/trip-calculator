@@ -27,6 +27,7 @@
   "form.depreciationRateHint": "0,5 грн за 1 км",
   "form.fuelCost": "Паливо",
   "form.depreciation": "Амортизація",
+  "form.totalDistance": "Загальна відстань",
   "form.total": "Вартість поїздки",
   "form.perPerson": "З однієї людини",
   "form.peopleError": "Введіть ціле число від 1",

@@ -17,7 +17,7 @@ import {
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { TripCalculatorResult } from '../hooks/useTripCalculator'
-import { formatMoneyUah } from '../lib/formatUah'
+import { formatDistanceKm, formatMoneyUah } from '../lib/formatUah'
 import type { PresetFuelKind } from '../services/ukFuelPrices'
 import { VehiclePicker } from './VehiclePicker'
 
@@ -150,7 +150,7 @@ export function TripForm({
           />
         </RadioGroup>
         {fuelPriceSource === 'preset' && (
-          <Stack spacing={1} sx={{ mt: 1 }}>
+          <Stack spacing={1.5} sx={{ mt: 1 }}>
             <ToggleButtonGroup
               exclusive
               value={presetFuelType}
@@ -297,30 +297,85 @@ export function TripForm({
         helperText={result.peopleError ? t('form.peopleError') : undefined}
       />
       {result.inputsValid && result.totalUah !== null && result.fuelCostUah !== null && (
-        <Stack spacing={1}>
-          {result.depreciationUah !== null ? (
-            <>
-              <Typography variant="body2" color="text.secondary">
-                {t('form.fuelCost')}: {formatMoneyUah(result.fuelCostUah, locale)}
+        <Stack spacing={2}>
+          {result.distanceTotalKm !== null && (
+            <Box
+              className="border-4 border-bauhaus-ink bg-white px-4 py-3 shadow-[4px_4px_0px_0px_#121212]"
+              component="section"
+              aria-label={t('form.totalDistance')}
+            >
+              <Typography
+                variant="caption"
+                component="p"
+                className="mb-1 block font-bold uppercase tracking-widest text-bauhaus-ink"
+              >
+                {t('form.totalDistance')}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {t('form.depreciation')}: {formatMoneyUah(result.depreciationUah, locale)}
+              <Typography
+                variant="h6"
+                component="p"
+                className="font-black uppercase leading-none tracking-tight text-bauhaus-ink"
+              >
+                {formatDistanceKm(result.distanceTotalKm, locale)}
               </Typography>
-              <Typography variant="subtitle1">
-                {t('form.total')}: {formatMoneyUah(result.totalUah, locale)}
-              </Typography>
-            </>
-          ) : (
-            <Typography variant="subtitle1">
-              {t('form.total')}: {formatMoneyUah(result.totalUah, locale)}
-            </Typography>
+            </Box>
           )}
-          {result.perPerson.kind === 'split' && (
-            <Typography variant="body1" color="primary">
-              {t('form.perPerson')}:{' '}
-              {formatMoneyUah(result.perPerson.amountUah, locale)}
-            </Typography>
-          )}
+          <Stack spacing={1}>
+            {result.depreciationUah !== null ? (
+              <>
+                <Typography variant="body2" color="text.secondary">
+                  {t('form.fuelCost')}: {formatMoneyUah(result.fuelCostUah, locale)}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {t('form.depreciation')}: {formatMoneyUah(result.depreciationUah, locale)}
+                </Typography>
+                <Box
+                  className="border-4 border-bauhaus-ink bg-bauhaus-yellow px-4 py-4 shadow-[6px_6px_0px_0px_#121212] sm:px-5"
+                  component="div"
+                >
+                  <Typography
+                    variant="caption"
+                    component="p"
+                    className="mb-2 block font-bold uppercase tracking-widest text-bauhaus-ink"
+                  >
+                    {t('form.total')}
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    component="p"
+                    className="font-black uppercase leading-none tracking-tighter text-bauhaus-ink sm:text-3xl"
+                  >
+                    {formatMoneyUah(result.totalUah, locale)}
+                  </Typography>
+                </Box>
+              </>
+            ) : (
+              <Box
+                className="border-4 border-bauhaus-ink bg-bauhaus-yellow px-4 py-4 shadow-[6px_6px_0px_0px_#121212] sm:px-5"
+                component="div"
+              >
+                <Typography
+                  variant="caption"
+                  component="p"
+                  className="mb-2 block font-bold uppercase tracking-widest text-bauhaus-ink"
+                >
+                  {t('form.total')}
+                </Typography>
+                <Typography
+                  variant="h5"
+                  component="p"
+                  className="font-black uppercase leading-none tracking-tighter text-bauhaus-ink sm:text-3xl"
+                >
+                  {formatMoneyUah(result.totalUah, locale)}
+                </Typography>
+              </Box>
+            )}
+            {result.perPerson.kind === 'split' && (
+              <Typography variant="body1" color="primary" className="font-bold">
+                {t('form.perPerson')}: {formatMoneyUah(result.perPerson.amountUah, locale)}
+              </Typography>
+            )}
+          </Stack>
         </Stack>
       )}
     </Stack>

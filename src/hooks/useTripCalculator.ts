@@ -20,6 +20,8 @@ export type TripCalculatorResult = {
   totalUah: number | null
   fuelCostUah: number | null
   depreciationUah: number | null
+  /** Distance used for the estimate (one-way or doubled with «return trip»). */
+  distanceTotalKm: number | null
   perPerson: { kind: 'none' } | { kind: 'split'; amountUah: number }
   peopleError: boolean
   inputsValid: boolean
@@ -88,6 +90,7 @@ export function useTripCalculator() {
         totalUah: null,
         fuelCostUah: null,
         depreciationUah: null,
+        distanceTotalKm: null,
         perPerson: { kind: 'none' },
         peopleError: false,
         inputsValid: false,
@@ -105,6 +108,7 @@ export function useTripCalculator() {
         totalUah: total,
         fuelCostUah,
         depreciationUah: includeDepreciation ? depreciationUah : null,
+        distanceTotalKm: distanceForCostKm,
         perPerson: { kind: 'none' },
         peopleError: true,
         inputsValid: true,
@@ -115,6 +119,7 @@ export function useTripCalculator() {
         totalUah: total,
         fuelCostUah,
         depreciationUah: includeDepreciation ? depreciationUah : null,
+        distanceTotalKm: distanceForCostKm,
         perPerson: per,
         peopleError: false,
         inputsValid: true,
@@ -124,6 +129,7 @@ export function useTripCalculator() {
       totalUah: total,
       fuelCostUah,
       depreciationUah: includeDepreciation ? depreciationUah : null,
+      distanceTotalKm: distanceForCostKm,
       perPerson: { kind: 'none' },
       peopleError: false,
       inputsValid: true,

@@ -5,7 +5,6 @@ import {
   Button,
   Chip,
   CircularProgress,
-  Paper,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
@@ -280,7 +279,7 @@ export function MapRouteSection({
   )
 
   return (
-    <Paper className="p-4 flex flex-col gap-3" elevation={2}>
+    <div className="flex flex-col gap-3 pt-1">
       <Typography variant="h6">{t('map.title')}</Typography>
       <Typography variant="body2" color="text.secondary">
         {t('map.hint')}
@@ -364,7 +363,7 @@ export function MapRouteSection({
           {t('trip.duration')}: {formatDuration(routeSummary.durationSec, t)}
         </Typography>
       )}
-      <Box className="h-[min(420px,55vh)] w-full rounded overflow-hidden border border-gray-200">
+      <Box className="h-[min(420px,55vh)] w-full overflow-hidden border-2 border-bauhaus-ink shadow-[4px_4px_0px_0px_#121212] sm:border-4">
         <MapContainer
           center={[UKRAINE_CENTER.lat, UKRAINE_CENTER.lng]}
           zoom={DEFAULT_ZOOM}
@@ -381,7 +380,7 @@ export function MapRouteSection({
             <CircleMarker
               center={[pointA.point.lat, pointA.point.lng]}
               radius={10}
-              pathOptions={{ color: '#2e7d32', fillColor: '#66bb6a', fillOpacity: 0.9 }}
+              pathOptions={{ color: '#121212', fillColor: '#1040C0', fillOpacity: 0.95 }}
             >
               <Tooltip direction="top" offset={[0, -6]}>
                 A
@@ -392,7 +391,7 @@ export function MapRouteSection({
             <CircleMarker
               center={[pointB.point.lat, pointB.point.lng]}
               radius={10}
-              pathOptions={{ color: '#c62828', fillColor: '#ef5350', fillOpacity: 0.9 }}
+              pathOptions={{ color: '#121212', fillColor: '#D02020', fillOpacity: 0.95 }}
             >
               <Tooltip direction="top" offset={[0, -6]}>
                 B
@@ -404,7 +403,7 @@ export function MapRouteSection({
               key={`stop-${s.point.lat}-${s.point.lng}-${i}`}
               center={[s.point.lat, s.point.lng]}
               radius={8}
-              pathOptions={{ color: '#ef6c00', fillColor: '#ffb74d', fillOpacity: 0.9 }}
+              pathOptions={{ color: '#121212', fillColor: '#F0C020', fillOpacity: 0.95 }}
             >
               <Tooltip direction="top" offset={[0, -6]}>
                 {i + 1}
@@ -412,10 +411,10 @@ export function MapRouteSection({
             </CircleMarker>
           ))}
           {linePositions.length >= 2 && (
-            <Polyline positions={linePositions} pathOptions={{ color: '#1976d2', weight: 5 }} />
+            <Polyline positions={linePositions} pathOptions={{ color: '#1040C0', weight: 5 }} />
           )}
         </MapContainer>
       </Box>
-    </Paper>
+    </div>
   )
 }
