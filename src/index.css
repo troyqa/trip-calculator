@@ -2,6 +2,18 @@
 
 @import 'leaflet/dist/leaflet.css';
 
+@theme {
+  --color-bauhaus-bg: #f0f0f0;
+  --color-bauhaus-ink: #121212;
+  --color-bauhaus-red: #d02020;
+  --color-bauhaus-blue: #1040c0;
+  --color-bauhaus-yellow: #f0c020;
+  --color-bauhaus-muted: #e0e0e0;
+  --color-bauhaus-panel: #fff9c4;
+  --font-sans:
+    'Outfit', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+}
+
 html,
 body,
 #root {
@@ -10,4 +22,13 @@ body,
 
 body {
   margin: 0;
+  font-family: var(--font-sans);
+  background-color: var(--color-bauhaus-bg);
+  color: var(--color-bauhaus-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-bauhaus-ink);
+  outline-offset: 2px;
 }

@@ -24,6 +24,7 @@ describe('useTripCalculator', () => {
     expect(result.current.result.fuelCostUah).toBe(400)
     expect(result.current.result.depreciationUah).toBeNull()
     expect(result.current.result.inputsValid).toBe(true)
+    expect(result.current.result.distanceTotalKm).toBe(100)
   })
 
   it('adds depreciation at 0.5 UAH/km when enabled', () => {
@@ -37,6 +38,7 @@ describe('useTripCalculator', () => {
     expect(result.current.result.fuelCostUah).toBe(400)
     expect(result.current.result.depreciationUah).toBe(50)
     expect(result.current.result.totalUah).toBe(450)
+    expect(result.current.result.distanceTotalKm).toBe(100)
   })
 
   it('doubles effective distance when return trip is included', () => {
@@ -49,6 +51,7 @@ describe('useTripCalculator', () => {
     })
     expect(result.current.result.fuelCostUah).toBe(800)
     expect(result.current.result.totalUah).toBe(800)
+    expect(result.current.result.distanceTotalKm).toBe(200)
   })
 
   it('splits cost when people >= 2', () => {
@@ -63,5 +66,6 @@ describe('useTripCalculator', () => {
       kind: 'split',
       amountUah: 100,
     })
+    expect(result.current.result.distanceTotalKm).toBe(100)
   })
 })

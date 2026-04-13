@@ -27,6 +27,7 @@
   "form.depreciationRateHint": "0.5 UAH per km",
   "form.fuelCost": "Fuel",
   "form.depreciation": "Depreciation",
+  "form.totalDistance": "Total distance",
   "form.total": "Trip cost",
   "form.perPerson": "Per person",
   "form.peopleError": "Enter a whole number from 1",
