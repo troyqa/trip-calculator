@@ -374,11 +374,13 @@ export function MapRouteSection({
             {t('map.clickModeLabel')}
           </Typography>
           <ToggleButtonGroup
+            fullWidth
             size="small"
             exclusive
             value={mapMode}
             onChange={(_, v: MapClickMode | null) => v && setMapMode(v)}
             aria-label={t('map.clickModeLabel')}
+            sx={{ '& .MuiToggleButton-root': { flex: 1 } }}
           >
             <ToggleButton value="a">{t('map.modeA')}</ToggleButton>
             <ToggleButton value="b">{t('map.modeB')}</ToggleButton>
